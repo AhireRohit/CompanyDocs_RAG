@@ -1,0 +1,7 @@
+beautifulsoup4
+faiss-cpu
+gradio
+numpy
+requests
+sentence-transformers
+tqdm
