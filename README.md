@@ -1,12 +1,5 @@
 ---
-title: CompanyDocs RAG Assistant
-emoji: 📚
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: 6.14.0
-app_file: app.py
-pinned: false
+### CompanyDocs RAG Assistant
 ---
 
 # CompanyDocs RAG Assistant
@@ -194,26 +187,5 @@ Notes:
 4. Ensure `app.py` is at the repo root.
 5. Ensure `requirements.txt` is present.
 6. Space will install dependencies and run automatically.
-
-## Limitations
-
-- Uses a fixed list of URLs instead of broad crawling.
-- Extractive answer generation can miss nuanced synthesis.
-- Source pages can change over time, which may affect metrics.
-- No authentication, multi-user memory, or advanced safety filtering.
-
-## Future improvements
-
-- Add optional reranking for better precision.
-- Add chunk deduplication and better HTML section parsing.
-- Add lightweight local generative model mode for rewriting answers.
-- Add CI checks to run evaluation automatically on updates.
-
-## Resume bullet examples (replace numbers with your actual results)
-
-- Built an end-to-end RAG assistant over **20** GitLab handbook/docs pages; ingested and chunked **206** segments (500-word chunks, 80 overlap) for evidence-based QA.
-- Implemented semantic retrieval (**top-4** via **FAISS IndexFlatIP**, **384-d** all-MiniLM-L6-v2) and grounded answer generation; rejected unsupported queries when best similarity was below **0.28**.
-- Achieved retrieval metrics on **35**-question benchmark: FAISS **top-1 0.28 / top-4 0.56**, citation coverage **0.56**, unsupported rejection accuracy **0.80**.
-- Improved over keyword baseline (**top-4 0.36 → 0.56**, **+20.0 pts**) and reduced avg retrieval latency (**0.0349s → 0.011s**).
 
 </details>
