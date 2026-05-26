@@ -3,8 +3,6 @@
 A beginner-friendly Retrieval-Augmented Generation (RAG) chatbot that answers questions using a curated set of public GitLab handbook/docs pages.  
 It runs fully on free and open-source tools, works locally, and can be deployed on Hugging Face Spaces.
 
-## Why I built this
-Interview-ready, end-to-end RAG on real documentation (ingestion → FAISS indexing → grounded answers → retrieval benchmark).
 
 ## Tech stack
 
