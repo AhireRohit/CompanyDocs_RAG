@@ -1,7 +1,7 @@
 beautifulsoup4
 faiss-cpu
 gradio
-numpy
+numpy<2
 requests
 sentence-transformers
 tqdm

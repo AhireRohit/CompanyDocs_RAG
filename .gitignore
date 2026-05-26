@@ -1,4 +1,5 @@
 venv/
+Cursor RAG/
 __pycache__/
 .pytest_cache/
 *.pyc
