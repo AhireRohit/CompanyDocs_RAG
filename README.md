@@ -1,7 +1,3 @@
----
-### CompanyDocs RAG Assistant
----
-
 # CompanyDocs RAG Assistant
 
 A beginner-friendly Retrieval-Augmented Generation (RAG) chatbot that answers questions using a curated set of public GitLab handbook/docs pages.  
