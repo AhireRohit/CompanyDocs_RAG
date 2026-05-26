@@ -1,0 +1,196 @@
+---
+title: CompanyDocs RAG Assistant
+emoji: 📚
+colorFrom: blue
+colorTo: indigo
+sdk: gradio
+sdk_version: 6.14.0
+app_file: app.py
+pinned: false
+---
+
+# CompanyDocs RAG Assistant
+
+A beginner-friendly Retrieval-Augmented Generation (RAG) chatbot that answers questions using a curated set of public GitLab handbook/docs pages.  
+It runs fully on free and open-source tools, works locally, and can be deployed on Hugging Face Spaces.
+
+## Why I built this
+Interview-ready, end-to-end RAG on real documentation (ingestion → FAISS indexing → grounded answers → retrieval benchmark).
+
+## Tech stack
+
+- Python
+- Gradio (UI)
+- `sentence-transformers/all-MiniLM-L6-v2` (embeddings)
+- FAISS (vector search)
+- Requests + BeautifulSoup (data ingestion/cleaning)
+
+## Key Metrics (Retrieval + Grounding)
+- Sources: **20** GitLab pages → **206** chunks (500-word chunks, 80-word overlap)
+- Embeddings: `sentence-transformers/all-MiniLM-L6-v2` (**384-d**)
+- Retrieval: FAISS `IndexFlatIP` over normalized vectors; **top-4**
+- Grounded answers: up to **4** supporting sentences; unsupported questions rejected when best similarity `< 0.28`
+
+## Results (evaluation/results.json)
+- Dataset: **35** questions (**25 supported / 10 unsupported**)
+- FAISS accuracy: **top-1 0.28**, **top-4 0.56**
+- Citation coverage: **0.56**
+- Avg retrieval time: **0.0109 s**
+- Unsupported rejection accuracy: **0.80**
+- Keyword baseline (top-4): **0.36** (FAISS **+20.0 pts**; ~**0.011 s** vs **0.0349 s**)
+
+## Setup & Run
+1. `pip install -r requirements.txt`
+2. (Optional refresh) `python scripts/ingest_docs.py` and `python scripts/build_index.py`
+3. `python evaluation/evaluate_retrieval.py`
+4. `python evaluation/compare_baseline.py`
+5. `python app.py`
+
+Open: `http://127.0.0.1:7861`
+
+<details><summary>More details (structure, behavior, limitations)</summary>
+
+## Project structure
+
+```text
+company-docs-rag-assistant/
+  app.py
+  requirements.txt
+  README.md
+  .gitignore
+  data/
+    sources.txt
+    chunks.json
+  scripts/
+    ingest_docs.py
+    build_index.py
+  rag/
+    text_cleaner.py
+    chunker.py
+    retriever.py
+    answer_builder.py
+  vector_store/
+    index.faiss
+    metadata.json
+  evaluation/
+    eval_questions.json
+    evaluate_retrieval.py
+    compare_baseline.py
+    results.json
+```
+
+## Architecture (plain-text diagram)
+
+```text
+data/sources.txt
+      |
+      v
+scripts/ingest_docs.py ---> data/chunks.json
+      |
+      v
+scripts/build_index.py ---> vector_store/index.faiss + metadata.json
+      |
+      v
+app.py (Gradio UI) ---> rag/retriever.py ---> top-k chunks
+      |
+      v
+rag/answer_builder.py ---> grounded answer + source URLs
+      |
+      v
+evaluation/*.py ---> retrieval metrics in evaluation/results.json
+```
+
+## Local setup
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python scripts/ingest_docs.py
+python scripts/build_index.py
+python evaluation/evaluate_retrieval.py
+python evaluation/compare_baseline.py
+python app.py
+```
+
+Windows PowerShell activation command:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+```
+
+## How the app behaves
+
+- Retrieves top 4 relevant chunks for each question
+- Builds answer only from retrieved chunk text
+- Shows source URLs used
+- Returns fallback for unsupported questions:
+  - `I could not find this in the indexed documentation.`
+- Does not use paid APIs or external hosted LLM APIs
+
+## Evaluation design
+
+`evaluation/eval_questions.json` contains a small custom set of supported and unsupported questions.
+
+`evaluation/evaluate_retrieval.py` reports:
+
+- FAISS top-1 accuracy
+- FAISS top-4 accuracy
+- average retrieval time
+- citation coverage
+- unsupported-query rejection accuracy
+
+`evaluation/compare_baseline.py` compares:
+
+- keyword-search top-4 accuracy
+- FAISS top-4 accuracy
+- percentage-point improvement
+- average retrieval time for both
+
+## Metrics
+
+Metrics are read from `evaluation/results.json` after running both evaluation scripts.
+
+Current metrics:
+
+```json
+{}
+```
+
+Notes:
+
+- The evaluation set is custom-made and small.
+- Scores are useful for project comparison, not a production benchmark.
+- This is not a production-ready chatbot.
+
+## Deploy on Hugging Face Spaces (free)
+
+1. Create a new Hugging Face Space.
+2. Select **Gradio** as the SDK.
+3. Upload this project (or connect the GitHub repo).
+4. Ensure `app.py` is at the repo root.
+5. Ensure `requirements.txt` is present.
+6. Space will install dependencies and run automatically.
+
+## Limitations
+
+- Uses a fixed list of URLs instead of broad crawling.
+- Extractive answer generation can miss nuanced synthesis.
+- Source pages can change over time, which may affect metrics.
+- No authentication, multi-user memory, or advanced safety filtering.
+
+## Future improvements
+
+- Add optional reranking for better precision.
+- Add chunk deduplication and better HTML section parsing.
+- Add lightweight local generative model mode for rewriting answers.
+- Add CI checks to run evaluation automatically on updates.
+
+## Resume bullet examples (replace numbers with your actual results)
+
+- Built an end-to-end RAG assistant over **20** GitLab handbook/docs pages; ingested and chunked **206** segments (500-word chunks, 80 overlap) for evidence-based QA.
+- Implemented semantic retrieval (**top-4** via **FAISS IndexFlatIP**, **384-d** all-MiniLM-L6-v2) and grounded answer generation; rejected unsupported queries when best similarity was below **0.28**.
+- Achieved retrieval metrics on **35**-question benchmark: FAISS **top-1 0.28 / top-4 0.56**, citation coverage **0.56**, unsupported rejection accuracy **0.80**.
+- Improved over keyword baseline (**top-4 0.36 → 0.56**, **+20.0 pts**) and reduced avg retrieval latency (**0.0349s → 0.011s**).
+
+</details>
